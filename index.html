@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>极简导航页</title>
+    <link rel="icon" type="image/png" href="ico.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+            transition: background-image 1s ease-in-out;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 200px;
+            height: auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .search-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 300px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            max-width: 700px;
+            width: 100%;
+            align-items: center;
+        }
+
+        .engine-select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            padding: 0 15px;
+            height: 48px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+            padding-right: 35px;
+        }
+
+        .engine-select:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 16px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .search-box:focus {
+            border-color: #007bff;
+        }
+
+        .search-button {
+            background: #007bff;
+            color: white;
+            padding: 0 30px;
+            height: 48px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .search-button:hover {
+            background: #0056b3;
+            transform: scale(1.05);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .category {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            backdrop-filter: blur(5px);
+        }
+
+        .category h2 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .button {
+            background: rgba(248, 249, 250, 0.9);
+            color: #333;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            transition: all 0.2s;
+            flex-grow: 1;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .button:hover {
+            background: #007bff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .button img.icon {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+        }
+        
+        .icon-fallback {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            background: #007bff;
+            mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/%3E%3C/svg%3E") no-repeat center;
+            -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/%3E%3C/svg%3E") no-repeat center;
+            background-color: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-overlay"></div>
+    <div class="container">
+        <div class="logo-container">
+            <img src="LOGO.png" alt="网站Logo" class="logo">
+        </div>
+        <div class="search-container">
+            <form class="search-form" id="searchForm" target="_blank">
+                <select class="engine-select" id="engineSelect">
+                    <option value="baidu">百度</option>
+                    <option value="bing">Bing</option>
+                </select>
+                <input 
+                    type="search" 
+                    class="search-box" 
+                    id="searchInput"
+                    placeholder="百度一下"
+                    required
+                >
+                <button type="submit" class="search-button">搜索</button>
+            </form>
+        </div>
+
+        <div class="button-grid">
+            <div class="category">
+                <h2>视频</h2>
+                <div class="buttons">
+                    <a href="https://www.douyin.com" class="button" target="_blank">
+                        <img class="icon" data-src="https://www.douyin.com/favicon.ico" alt="图标">
+                        <span class="icon-fallback"></span>
+                        抖音
+                    </a>
+                    <a href="https://www.bilibili.com" class="button" target="_blank">
+                        <img class="icon" data-src="https://www.bilibili.com/favicon.ico" alt="图标">
+                        <span class="icon-fallback"></span>
+                        哔哩哔哩
+                    </a>
+                    <a href="http://8a9a1.com" class="button" target="_blank">
+                        <span class="icon-fallback"></span>
+                        8a
+                    </a>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>游戏</h2>
+                <div class="buttons">
+                    <a href="https://zhangyunxu.github.io/whc_games" class="button" target="_blank">
+                        <img class="icon" data-src="whc.png" alt="图标">
+                        <span class="icon-fallback"></span>
+                        王浩辰小游戏
+                    </a>
+                    <a href="https://www.playfc.cn/" class="button" target="_blank">
+                        <img class="icon" data-src="https://www.playfc.cn/favicon.ico" alt="图标">
+                        <span class="icon-fallback"></span>
+                        一起红白机
+                    </a>
+                    <a href="https://poki.com/zh" class="button" target="_blank">
+                        <img class="icon" data-src="https://a.poki-cdn.com/icons/favicon-32x32.png" alt="图标">
+                        <span class="icon-fallback"></span>
+                        Poki 宝玩
+                    </a>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>其它</h2>
+                <div class="buttons">
+                    <a href="http://www.ygdy1.cc/" class="button" target="_blank">
+                        <img class="icon" data-src="http://www.ygdy1.cc/favicon.ico" alt="图标">
+                        <span class="icon-fallback"></span>
+                        阳光电影网
+                    </a>
+                    <a href="https://www.downxia.com/" class="button" target="_blank">
+                        <img class="icon" data-src="https://www.downxia.com/favicon.ico" alt="图标">
+                        <span class="icon-fallback"></span>
+                        当下软件园
+                    </a>
+                </div>
+            </div>
+
+            <div class="category">
+                <h2>AI工具</h2>
+                <div class="buttons">
+                    <a href="https://www.deepseek.com/" class="button" target="_blank">
+                        <img class="icon" data-src="https://www.deepseek.com/favicon.ico" alt="图标">
+                        <span class="icon-fallback"></span>
+                        DeepSeek
+                    </a>
+                    <a href="https://www.doubao.com/" class="button" target="_blank">
+                        <img class="icon" data-src="https://lf-flow-web-cdn.doubao.com/obj/flow-doubao/samantha/logo-icon-white-bg.png" alt="图标">
+                        <span class="icon-fallback"></span>
+                        豆包
+                    </a>
+                    <a href="https://chat.yixiaai.com/chat" class="button" target="_blank">
+                        <img class="icon" data-src="https://chat.yixiaai.com/icons/icon-192x192.png" alt="图标">
+                        <span class="icon-fallback"></span>
+                        AI智慧岛
+                    </a>
+            </div>
+        </div>
+        
+        
+    </div>
+    <p style="text-align:center">By Zhangyx</p>
+
+    <script>
+        // 搜索引擎配置
+        const engines = {
+            baidu: {
+                url: "https://www.baidu.com/s",
+                param: "wd",
+                placeholder: "百度一下"
+            },
+            bing: {
+                url: "https://cn.bing.com/search",
+                param: "q",
+                placeholder: "使用Bing搜索"
+            },
+
+            Yandex: {
+                url: "https://yandex.com/search/?text=",
+                param: "q",
+                placeholder: "使用Yandex搜索"
+            }
+        };
+
+        // 元素引用
+        const searchForm = document.getElementById('searchForm');
+        const engineSelect = document.getElementById('engineSelect');
+        const searchInput = document.getElementById('searchInput');
+
+        // 切换搜索引擎
+        function switchEngine() {
+            const engine = engines[engineSelect.value];
+            searchForm.action = engine.url;
+            searchInput.name = engine.param;
+            searchInput.placeholder = engine.placeholder;
+            localStorage.setItem('searchEngine', engineSelect.value);
+        }
+
+        // 初始化引擎
+        function initEngine() {
+            const savedEngine = localStorage.getItem('searchEngine') || 'baidu';
+            engineSelect.value = savedEngine;
+            switchEngine();
+        }
+
+        // 加载Bing背景
+        function loadBingBackground() {
+            const bingAPI = "https://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=zh-CN";
+            fetch(bingAPI)
+                .then(response => response.json())
+                .then(data => {
+                    document.body.style.backgroundImage = `url(https://cn.bing.com${data.images[0].url})`;
+                })
+                .catch(() => {
+                    document.body.style.backgroundImage = "url('https://api.dujin.org/bing/1920.php')";
+                });
+        }
+
+        // 加载图标
+        function loadIcons() {
+            document.querySelectorAll('.icon').forEach(img => {
+                const tempImg = new Image();
+                tempImg.src = img.dataset.src;
+                tempImg.onload = () => {
+                    img.src = img.dataset.src;
+                    img.nextElementSibling.style.display = 'none';
+                };
+                tempImg.onerror = () => {
+                    img.style.display = 'none';
+                    img.nextElementSibling.style.display = 'inline-block';
+                };
+            });
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            initEngine();
+            loadBingBackground();
+            loadIcons();
+        });
+
+        // 事件监听
+        engineSelect.addEventListener('change', switchEngine);
+    </script>
+</body>
+</html>
